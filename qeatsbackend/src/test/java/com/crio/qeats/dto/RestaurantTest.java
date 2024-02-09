@@ -33,7 +33,7 @@ class RestaurantTest {
             + "    \"South Indian\"\n"
             + "  ]\n"
             + "}";
-
+    
     // Setting up a restaurant object for testing. The following ensures that restaurant
     // object can deserialize the right restaurant json.
     Restaurant restaurant = new Restaurant();
