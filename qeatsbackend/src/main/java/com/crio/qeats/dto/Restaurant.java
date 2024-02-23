@@ -8,6 +8,7 @@
 package com.crio.qeats.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -46,6 +47,8 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class Restaurant {
     private String restaurantId;
     private  String name;

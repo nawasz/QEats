@@ -8,6 +8,7 @@
 package com.crio.qeats.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -68,11 +69,11 @@ class RestaurantServiceTest {
         .findAllRestaurantsCloseBy(any(Double.class), any(Double.class), any(LocalTime.class),
             any(Double.class)))
         .thenReturn(restaurants);
-
+ 
     GetRestaurantsResponse allRestaurantsCloseBy = restaurantService
         .findAllRestaurantsCloseBy(new GetRestaurantsRequest(20.0, 30.0),
             timeOfService); //LocalTime.of(19,00));
-
+    
     assertEquals(2, allRestaurantsCloseBy.getRestaurants().size());
     assertEquals("11", allRestaurantsCloseBy.getRestaurants().get(0).getRestaurantId());
     assertEquals("12", allRestaurantsCloseBy.getRestaurants().get(1).getRestaurantId());
@@ -81,13 +82,14 @@ class RestaurantServiceTest {
     verify(restaurantRepositoryServiceMock, times(1))
         .findAllRestaurantsCloseBy(any(Double.class), any(Double.class), any(LocalTime.class),
             servingRadiusInKms.capture());
-
+           System.out.println(servingRadiusInKms.getValue().toString());
     return servingRadiusInKms.getValue().toString();
   }
 
   @Test
-  void peakHourServingRadiusOf3KmsAt7Pm() throws IOException {
-    assertEquals(getServingRadius(loadRestaurantsDuringPeakHours(), LocalTime.of(19, 0)), "3.0");
+  void peakHourServingRadiusOf3KmsAt7Pm() throws IOException { //LocalTime.of(19,00))
+
+       assertEquals(getServingRadius(loadRestaurantsDuringPeakHours(), LocalTime.of(19, 0)), "3.0");
   }
 
 
@@ -100,9 +102,29 @@ class RestaurantServiceTest {
     // 1. If the mocked service methods are being called
     // 2. If the expected restaurants are being returned
     // HINT: Use the `loadRestaurantsDuringNormalHours` utility method to speed things up
+    List<Restaurant> restaurants = loadRestaurantsDuringNormalHours();
+    when(restaurantRepositoryServiceMock
+    .findAllRestaurantsCloseBy(any(Double.class), any(Double.class), any(LocalTime.class),
+        any(Double.class)))
+    .thenReturn(restaurants);
+    GetRestaurantsResponse allRestaurantsCloseBy = restaurantService
+        .findAllRestaurantsCloseBy(new GetRestaurantsRequest(20.0, 30.0),
+            LocalTime.of(15,0)); 
+    assertEquals(4, allRestaurantsCloseBy.getRestaurants().size());
+    assertEquals("10", allRestaurantsCloseBy.getRestaurants().get(0).getRestaurantId());
+    assertEquals("11", allRestaurantsCloseBy.getRestaurants().get(1).getRestaurantId());
+    assertEquals("12", allRestaurantsCloseBy.getRestaurants().get(2).getRestaurantId());
+    assertEquals("13", allRestaurantsCloseBy.getRestaurants().get(3).getRestaurantId());
+
+    ArgumentCaptor<Double> servingRadiusInKms  = ArgumentCaptor.forClass(Double.class);
+    verify(restaurantRepositoryServiceMock,times(1))
+    .findAllRestaurantsCloseBy(any(Double.class), any(Double.class), any(LocalTime.class),
+      servingRadiusInKms.capture());
+  assertEquals(servingRadiusInKms.getValue().toString(),"5.0");
+       
 
 
-     assertFalse(false);
+    
   }
 
 
@@ -128,7 +150,7 @@ class RestaurantServiceTest {
     String fixture =
         FixtureHelpers.fixture(FIXTURES + "/peak_hours_list_of_restaurants.json");
 
-    return objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
+      return objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
     });
   }
 }
