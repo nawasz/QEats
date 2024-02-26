@@ -17,6 +17,7 @@ import com.crio.qeats.utils.FixtureHelpers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -39,15 +40,20 @@ public class RestaurantServiceMockitoTestStub {
   protected Restaurant restaurant3;
   protected Restaurant restaurant4;
   protected Restaurant restaurant5;
-
+  @InjectMocks
   protected RestaurantServiceImpl restaurantService;
-
+  @Mock
   protected RestaurantRepositoryService restaurantRepositoryServiceMock;
-
+ @BeforeEach
   public void initializeRestaurantObjects() throws IOException {
     String fixture =
         FixtureHelpers.fixture(FIXTURES + "/mocking_list_of_restaurants.json");
     Restaurant[] restaurants = objectMapper.readValue(fixture, Restaurant[].class);
+    restaurant1 = restaurants[0];
+    restaurant2 = restaurants[1];
+    restaurant3 = restaurants[2];
+    restaurant4 = restaurants[3];
+    restaurant5 = restaurants[4];
     // TODO CRIO_TASK_MODULE_MOCKITO
     //  What to do with this Restaurant[] ? Looks unused?
     //  Look for the "assert" statements in the tests
@@ -67,7 +73,7 @@ public class RestaurantServiceMockitoTestStub {
      when(restaurantRepositoryServiceMock
             .findAllRestaurantsCloseBy(any(Double.class), any(Double.class),
                 eq(LocalTime.of(3, 0)),
-                eq(1.0)))
+                eq(5.0)))
             .thenReturn(Arrays.asList(restaurant1, restaurant2));
     GetRestaurantsResponse allRestaurantsCloseBy = restaurantService
         .findAllRestaurantsCloseBy(new GetRestaurantsRequest(20.0, 30.0),
@@ -88,13 +94,15 @@ public class RestaurantServiceMockitoTestStub {
   @Test
   public void  testFindNearbyWithin3km() throws IOException {
 
-    List<Restaurant> restaurantList1 = null;
-    List<Restaurant> restaurantList2 = null;
-
+    List<Restaurant> restaurantList1 = new ArrayList<>();
+    List<Restaurant> restaurantList2 = new ArrayList<>();
+    restaurantList1.addAll((Arrays.asList(restaurant1, restaurant2)));
+    restaurantList2.addAll((Arrays.asList(restaurant3, restaurant4,restaurant5)));
+            
     // TODO: CRIO_TASK_MODULE_MOCKITO
     //  Initialize these two lists above such that I will match with the assert statements
     //  defined below.
-
+   //allRestaurantsCloseByOffPeakHours = restaurantList1
 
     lenient().doReturn(restaurantList1)
         .when(restaurantRepositoryServiceMock)
@@ -107,8 +115,10 @@ public class RestaurantServiceMockitoTestStub {
             eq(3.0));
 
     GetRestaurantsResponse allRestaurantsCloseByOffPeakHours;
-    GetRestaurantsResponse allRestaurantsCloseByPeakHours;
 
+    GetRestaurantsResponse allRestaurantsCloseByPeakHours;
+    allRestaurantsCloseByOffPeakHours =  restaurantService.findAllRestaurantsCloseBy(new GetRestaurantsRequest(20.0, 30.2),LocalTime.of(3,0));
+    allRestaurantsCloseByPeakHours = restaurantService.findAllRestaurantsCloseBy(new GetRestaurantsRequest(21.0, 31.1),LocalTime.of(19,0));
     // TODO: CRIO_TASK_MODULE_MOCKITO
     //  Call restaurantService.findAllRestaurantsCloseBy with appropriate parameters such that
     //  Both of the mocks created above are called.
@@ -118,12 +128,14 @@ public class RestaurantServiceMockitoTestStub {
 
     assertEquals(2, allRestaurantsCloseByOffPeakHours.getRestaurants().size());
     assertEquals("11", allRestaurantsCloseByOffPeakHours.getRestaurants().get(0).getRestaurantId());
-    assertEquals("14", allRestaurantsCloseByOffPeakHours.getRestaurants().get(1).getRestaurantId());
+    assertEquals("12", allRestaurantsCloseByOffPeakHours.getRestaurants().get(1).getRestaurantId());
 
 
-    assertEquals(2, allRestaurantsCloseByPeakHours.getRestaurants().size());
-    assertEquals("12", allRestaurantsCloseByPeakHours.getRestaurants().get(0).getRestaurantId());
+    assertEquals(3, allRestaurantsCloseByPeakHours.getRestaurants().size());
+    assertEquals("13", allRestaurantsCloseByPeakHours.getRestaurants().get(0).getRestaurantId());
     assertEquals("14", allRestaurantsCloseByPeakHours.getRestaurants().get(1).getRestaurantId());
+    assertEquals("15", allRestaurantsCloseByPeakHours.getRestaurants().get(2).getRestaurantId());
+
   }
 
 }
