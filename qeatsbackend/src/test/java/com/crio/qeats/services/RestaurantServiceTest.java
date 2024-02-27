@@ -82,7 +82,6 @@ class RestaurantServiceTest {
     verify(restaurantRepositoryServiceMock, times(1))
         .findAllRestaurantsCloseBy(any(Double.class), any(Double.class), any(LocalTime.class),
             servingRadiusInKms.capture());
-           System.out.println(servingRadiusInKms.getValue().toString());
     return servingRadiusInKms.getValue().toString();
   }
 
