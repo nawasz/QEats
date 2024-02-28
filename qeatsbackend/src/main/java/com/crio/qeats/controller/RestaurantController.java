@@ -1,6 +1,6 @@
 /*
  *
- *  * Copyright (c) Crio.Do 2019. All rights reserved
+ * * Copyright (c) Crio.Do 2019. All rights reserved
  *
  */
 
@@ -42,25 +42,25 @@ public class RestaurantController {
   public static final String CART_CLEAR_API = "/cart/clear";
   public static final String POST_ORDER_API = "/order";
   public static final String GET_ORDERS_API = "/orders";
-  
+
   @Autowired
   private RestaurantService restaurantService;
 
 
 
   @GetMapping(RESTAURANTS_API)
-  public ResponseEntity<GetRestaurantsResponse> getRestaurants(@Valid
-    @RequestBody  GetRestaurantsRequest getRestaurantsRequest) {
+  public ResponseEntity<GetRestaurantsResponse> getRestaurants(
+      @Valid @RequestBody GetRestaurantsRequest getRestaurantsRequest) {
 
-      
+
     log.info("getRestaurants called with {}", getRestaurantsRequest);
     GetRestaurantsResponse getRestaurantsResponse;
 
-      //CHECKSTYLE:OFF
-      getRestaurantsResponse = restaurantService
-          .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
-      log.info("getRestaurants returned {}", getRestaurantsResponse);
-      //CHECKSTYLE:ON
+    // CHECKSTYLE:OFF
+    getRestaurantsResponse =
+        restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+    log.info("getRestaurants returned {}", getRestaurantsResponse);
+    // CHECKSTYLE:ON
 
     return ResponseEntity.ok().body(getRestaurantsResponse);
   }
@@ -76,36 +76,27 @@ public class RestaurantController {
   //
   // HTTP Code: 200
   // {
-  //  "menu": {
-  //    "items": [
-  //      {
-  //        "attributes": [
-  //          "South Indian"
-  //        ],
-  //        "id": "1",
-  //        "imageUrl": "www.google.com",
-  //        "itemId": "10",
-  //        "name": "Idly",
-  //        "price": 45
-  //      }
-  //    ],
-  //    "restaurantId": "11"
-  //  }
+  // "menu": {
+  // "items": [
+  // {
+  // "attributes": [
+  // "South Indian"
+  // ],
+  // "id": "1",
+  // "imageUrl": "www.google.com",
+  // "itemId": "10",
+  // "name": "Idly",
+  // "price": 45
+  // }
+  // ],
+  // "restaurantId": "11"
+  // }
   // }
   // Error Response:
   // HTTP Code: 4xx, if client side error.
-  //          : 5xx, if server side error.
+  // : 5xx, if server side error.
   // Eg:
   // curl -X GET "http://localhost:8081/qeats/v1/menu?restaurantId=11"
-
-
-
-
-
-
-
-
-
 
 
 

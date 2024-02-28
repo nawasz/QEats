@@ -44,7 +44,7 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
 
 
   @Autowired
-  private MongoTemplate mongoTemplate;
+  private  RestaurantRepository restaurantRepository;
 
   @Autowired
   private Provider<ModelMapper> modelMapperProvider;
@@ -63,15 +63,22 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   // Check RestaurantRepositoryService.java file for the interface contract.
   public List<Restaurant> findAllRestaurantsCloseBy(Double latitude,
       Double longitude, LocalTime currentTime, Double servingRadiusInKms) {
+        ModelMapper modelMapper = modelMapperProvider.get();
+   List<RestaurantEntity> restaurantEntityList = restaurantRepository.findAll();
 
-    List<Restaurant> restaurants = null;
+    List<Restaurant> restaurantList = new ArrayList<>();
 
+    for(RestaurantEntity restaurantEntity : restaurantEntityList ){
+      if(isRestaurantCloseByAndOpen(restaurantEntity,currentTime,latitude,longitude,servingRadiusInKms)){
+        restaurantList.add(modelMapper.map(restaurantEntity,Restaurant.class));
+      }
+    }
 
       //CHECKSTYLE:OFF
       //CHECKSTYLE:ON
 
 
-    return restaurants;
+    return restaurantList;
   }
 
 
